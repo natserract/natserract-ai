@@ -2,8 +2,11 @@ import glob
 import logging
 import os
 
+from gensim.models.doc2vec import TaggedDocument
+
 from data_loader.file_extractor import FileExtractor
 from database import get_session
+from helpers.vectorize import preprocess_text
 from models import Documents
 from utils import get_base_path, markdown_to_text
 
@@ -42,3 +45,12 @@ async def create(path='_datasets'):
 
     except Exception as e:
         raise ValueError(str(e))
+
+
+def create_tagged_documents(nlp, contents: str):
+    tagged_documents = [
+        TaggedDocument(words=preprocess_text(nlp(md)), tags=[str(i)])
+        for i, md in enumerate(contents)
+    ]
+
+    return tagged_documents
