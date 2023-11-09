@@ -6,6 +6,8 @@ import spacy
 from coordinators.documents.read import count_documents
 from coordinators.models.create import init_doc2_vec_models
 from coordinators.models.read import count_models, filter_by_similarity_score
+from llms.agent.agent_executor import AgentExecutor
+from llms.completion import complete_stream
 
 from logger import init_logger
 from models import init_models
@@ -22,10 +24,15 @@ def main():
     if len(count_items) > 1:
         start_time = time.time()
 
-        query = 'haskell'
+        query = 'Hello!'
+
         similarities = asyncio.get_event_loop().run_until_complete(
             filter_by_similarity_score(nlp, query)
         )
+        documents = "".join(["".join(contents) for (contents, score) in similarities])
+        completion = complete_stream(query, documents)
+        print('completion', completion)
+
 
         end_time = time.time()
         print("Total time searched: ", end_time - start_time)

@@ -7,7 +7,6 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
-openai = "^1.1.1"
 langchain = "^0.0.331"
 python-dotenv = "^1.0.0"
 markdown = "^3.5.1"
@@ -16,6 +15,8 @@ spacy = "^3.7.2"
 asyncpg = "^0.29.0"
 asyncio = "^3.4.3"
 pgvector = "^0.2.3"
+transformers = "^4.35.0"
+openai = "^0.28.1"
 
 
 [build-system]

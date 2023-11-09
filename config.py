@@ -16,4 +16,5 @@ class Config:
     OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
     OPENAI_MODEL = os.environ.get('OPENAI_MODEL')
     EMBEDDING_MODEL = os.environ.get('EMBEDDING_MODEL')
+    VECTOR_STORE: str = os.environ.get('VECTOR_STORE')
 
