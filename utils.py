@@ -24,7 +24,6 @@ def load_markdowns() -> str:
         with open(markdown_file_path, 'r', encoding="utf-8") as f:
             file_name = os.path.basename(markdown_file_path)
             content = f.read()
-
             markdown_contents.append((content, file_name))
 
     return markdown_contents
@@ -43,8 +42,6 @@ def markdown_to_text(markdown_string):
     html_string = markdown(markdown_string)
     text_string = html.unescape(html_string)
     return text_string
-
-
 
 
 

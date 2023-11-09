@@ -2,7 +2,7 @@ import asyncio
 
 from sqlalchemy import (
     Column, Integer, String, PrimaryKeyConstraint, text,
-    DateTime, Text, ForeignKeyConstraint
+    DateTime, Text, ForeignKeyConstraint, LargeBinary
 )
 from sqlalchemy.dialects.postgresql import JSONB, BYTEA
 from sqlalchemy.orm import declarative_base
@@ -34,32 +34,7 @@ class Models(ModelBase):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False, unique=True)
-    training_parameters = Column(JSONB, nullable=True)
-    created_at = Column(DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP(0)'))
-    updated_at = Column(DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP(0)'))
-
-
-class DocumentVectors(ModelBase):
-    __tablename__ = 'document_vectors'
-    __table_args__ = (
-        PrimaryKeyConstraint('id', name='document_vector_pkey'),
-        ForeignKeyConstraint(['document_id'], ['documents.id']),
-        ForeignKeyConstraint(['model_id'], ['models.id']),
-    )
-
-    id = Column(Integer, primary_key=True)
-    document_id = Column(
-        Integer,
-        nullable=False,
-        unique=True,
-    )
-    model_id = Column(
-        Integer,
-        nullable=False,
-        unique=True,
-    )
-
-    vector = Column(BYTEA, nullable=False)
+    data = Column(LargeBinary, nullable=False)
     created_at = Column(DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP(0)'))
     updated_at = Column(DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP(0)'))
 
