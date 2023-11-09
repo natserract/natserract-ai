@@ -7,6 +7,9 @@ import spacy
 from gensim.models import Word2Vec
 
 from gensim.test.utils import common_texts
+
+from logger import init_logger
+from models import init_models
 from utils import load_markdowns, markdown_to_text, get_vector, get_base_path
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 
@@ -49,7 +52,7 @@ def aggregate_vectors(word2vec_model, document):
         return np.zeros(word2vec_model.vector_size)
 
 
-def main():
+def preprocess():
     markdown_documents = [content for content, name in load_markdowns()]
     tagged_documents = [
         TaggedDocument(words=preprocess_text(markdown_to_text(md)), tags=[str(i)])
@@ -85,5 +88,11 @@ def main():
 
     document_text = ' '.join(all_words)
     print('document_text', document_text)
+
+
+def main():
+    init_logger()
+    init_models()
+
 
 main()

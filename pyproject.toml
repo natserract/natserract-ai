@@ -13,6 +13,9 @@ python-dotenv = "^1.0.0"
 markdown = "^3.5.1"
 gensim = "^4.3.2"
 spacy = "^3.7.2"
+asyncpg = "^0.29.0"
+asyncio = "^3.4.3"
+pgvector = "^0.2.3"
 
 
 [build-system]
