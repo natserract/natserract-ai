@@ -2,16 +2,22 @@ import datetime
 import json
 
 from langchain.chains import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.llms.openai import OpenAI
+from langchain.schema import Document
 
 import config
 import openai
 
+from llms.chain.llm_chain import ConversationChain
 from llms.llm.llm_creator import LLMCreator
 from llms.llm.openai import OpenAILLM
 from llms.prompt import question_prompt
 from llms.prompt.chat_combine_prompt import chat_combine_prompt
+from llms.prompt.load_qa_prompt import load_qa_prompt
 from llms.settings import settings
 from transformers import GPT2TokenizerFast
+from langchain.chains.question_answering import load_qa_chain
 
 
 def count_tokens(string):
@@ -38,16 +44,20 @@ def complete_stream(question: str, documents: str):
         #                 messages_combine.append({"role": "system", "content": i["response"]})
         # messages_combine.append({"role": "user", "content": question})
 
-        llm = openai.ChatCompletion.create(
-            model=config.Config.OPENAI_MODEL,
-            messages=messages_combine
-        )
-        chain = LLMChain(llm=llm, prompt=chat_combine_prompt)
+        llm = ChatOpenAI(model_name=config.Config.OPENAI_MODEL,
+                         openai_api_key=config.Config.OPENAI_API_KEY,
+                         temperature=0,
+                         max_tokens=1000)
+        chain = load_qa_chain(llm, chain_type="stuff", prompt=load_qa_prompt)
 
-        completion = chain.run(
-            question=question,
-            context=documents
+        resp = chain.run(input_documents=documents,
+            question=question, tone="Sad"
         )
+
+        # completion = chain.run(
+        #     question=question,
+        #     context=documents
+        # )
 
         # completion = llm.gen(
         #     model=config.Config.OPENAI_MODEL,
@@ -60,7 +70,7 @@ def complete_stream(question: str, documents: str):
         #     yield f"data: {data}\n\n"
 
         # generate summary
-        result = {"answer": completion}
+        result = {"answer": resp}
         #
         # messages_summary = [
         #     {"role": "assistant", "content": "Summarise following conversation in no more than 3 words, "
