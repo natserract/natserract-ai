@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "natserract-ai"
+version = "0.1.0"
+description = ""
+authors = ["natserract <benjaminstwo@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+openai = "^1.1.1"
+langchain = "^0.0.331"
+python-dotenv = "^1.0.0"
+markdown = "^3.5.1"
+gensim = "^4.3.2"
+spacy = "^3.7.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
