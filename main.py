@@ -5,7 +5,7 @@ import spacy
 
 from coordinators.documents.read import count_documents
 from coordinators.models.create import init_doc2_vec_models
-from coordinators.models.read import count_models, retrieve_models, filter_by_similarity_score
+from coordinators.models.read import count_models, filter_by_similarity_score
 
 from logger import init_logger
 from models import init_models

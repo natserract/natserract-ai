@@ -6,9 +6,10 @@ from gensim.models.doc2vec import TaggedDocument
 
 from data_loader.file_extractor import FileExtractor
 from database import get_session
+from helpers.file import get_base_path
+from helpers.text import markdown_to_text
 from helpers.vectorize import preprocess_text
 from models import Documents
-from utils import get_base_path, markdown_to_text
 
 
 async def create(path='_datasets'):
@@ -48,6 +49,9 @@ async def create(path='_datasets'):
 
 
 def create_tagged_documents(nlp, contents: str):
+    """
+    Preprocess and tokenize each document
+    """
     tagged_documents = [
         TaggedDocument(words=preprocess_text(nlp(md)), tags=[str(i)])
         for i, md in enumerate(contents)
