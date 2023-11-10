@@ -20,8 +20,7 @@ async def ainit():
 async def arunning():
     start_time = time.time()
 
-    # query = input('Question: ')
-    query = 'Apa itu defensive programming?'
+    query = input('Question: ')
     agent = AgentExecutor()
     response = await agent.run(query=query)
     print('\n', response.output)
