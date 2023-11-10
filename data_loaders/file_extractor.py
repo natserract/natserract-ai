@@ -4,7 +4,7 @@ from typing import List, Union
 from langchain.document_loaders import TextLoader
 from langchain.schema import Document
 
-from data_loader.loader.markdown import MarkdownLoader
+from data_loaders.loader.markdown import MarkdownLoader
 
 
 class FileExtractor:

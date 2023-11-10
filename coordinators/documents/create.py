@@ -4,7 +4,7 @@ import os
 
 from gensim.models.doc2vec import TaggedDocument
 
-from data_loader.file_extractor import FileExtractor
+from data_loaders.file_extractor import FileExtractor
 from database import get_session
 from helpers.file import get_base_path
 from helpers.text import markdown_to_text
