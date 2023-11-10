@@ -29,17 +29,31 @@ def main():
 
         query = 'Mulai versi berapa Angular fitur Renderer telah tersedia?'
 
-        similarities = asyncio.get_event_loop().run_until_complete(
-            filter_by_similarity_score(nlp, query)
-        )
+        # similarities = asyncio.get_event_loop().run_until_complete(
+        #     filter_by_similarity_score(nlp, query)
+        # )
+        #
+        # documents = []
+        # for keywords, similarity_score in similarities:
+        #     value = " ".join(keywords)
+        #     document = Document(page_content=value)
+        #     documents.append(document)
 
-        documents = []
-        for keywords, similarity_score in similarities:
-            value = " ".join(keywords)
-            document = Document(page_content=value)
-            documents.append(document)
-
-        response = complete_stream(query, documents)
+        # agent_configuration = AgentConfiguration(
+        #     strategy=planning_strategy,
+        #     model_instance=agent_model_instance,
+        #     tools=tools,
+        #     summary_model_instance=summary_model_instance,
+        #     memory=memory,
+        #     callbacks=[chain_callback, agent_callback],
+        #     max_iterations=10,
+        #     max_execution_time=400.0,
+        #     early_stopping_method="generate"
+        # )
+        agent = AgentExecutor()
+        response = agent.run(query=query)
+        #
+        # response = complete_stream(query, documents)
         print('response', response)
 
         end_time = time.time()

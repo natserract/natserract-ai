@@ -9,7 +9,6 @@ from langchain.schema import Document
 import config
 import openai
 
-from llms.chain.llm_chain import ConversationChain
 from llms.llm.llm_creator import LLMCreator
 from llms.llm.openai import OpenAILLM
 from llms.prompt import question_prompt
