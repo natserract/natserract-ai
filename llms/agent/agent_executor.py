@@ -1,9 +1,10 @@
 import logging
 from typing import Union, Optional, Sequence
 
-from langchain.agents import AgentExecutor as LCAgentExecutor, ConversationalChatAgent
+from langchain.agents import AgentExecutor as LCAgentExecutor, ConversationalChatAgent, LLMSingleActionAgent
 from langchain.agents import BaseSingleActionAgent, BaseMultiActionAgent
 from langchain.callbacks.base import Callbacks
+from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 from langchain.memory.chat_memory import BaseChatMemory
@@ -11,9 +12,13 @@ from langchain.tools import BaseTool
 from pydantic.v1 import Extra, BaseModel
 
 from config import Config
+from llms.agent.output_parser.openai import OpenAIFunctionsAgentOutputParser
 from llms.error import LLMError
 from llms.helpers import moderation
+from llms.prompt.agent_prompt import TEMPLATE_INSTRUCTIONS, SUFFIX
+from llms.prompt.prompt_template import CustomPromptTemplate
 from llms.settings import settings
+from llms.tools.current_datetime_tool import DatetimeTool
 
 
 class AgentConfiguration(BaseModel):
@@ -47,7 +52,7 @@ class AgentExecutor:
             ),
             tools=self._get_tools(),
             memory=ConversationBufferMemory(
-                memory_key="chat_history",
+                memory_key="history",
                 return_messages=True,
                 chat_memory=ChatMessageHistory(),
             ),
@@ -56,15 +61,25 @@ class AgentExecutor:
         self.agent = self._init_agent()
 
     def _get_tools(self) -> Sequence[BaseTool]:
-        return []
+        return [
+            DatetimeTool()
+        ]
 
     def _init_agent(self) -> Union[BaseSingleActionAgent | BaseMultiActionAgent]:
-        agent = ConversationalChatAgent.from_llm_and_tools(
-            llm=self.configuration.llm,
+        prompt = CustomPromptTemplate(
+            prefix='',
+            instructions=TEMPLATE_INSTRUCTIONS,
+            suffix=SUFFIX,
             tools=self.configuration.tools,
-            system_message="Assistant is useful for general purposes and will try its best to answer questions",
-            input_variables=['input', 'chat_history', 'agent_scratchpad'],
-            verbose=True
+            input_variables=["input", "intermediate_steps", "history"]
+        )
+        llm_chain = LLMChain(llm=self.configuration.llm, prompt=prompt)
+        tool_names = [tool.name for tool in self.configuration.tools]
+        agent = LLMSingleActionAgent(
+            llm_chain=llm_chain,
+            output_parser=OpenAIFunctionsAgentOutputParser(),
+            stop=["\nObservation:"],
+            allowed_tools=tool_names,
         )
 
         logging.info("Running agent...")
@@ -95,7 +110,9 @@ class AgentExecutor:
         )
 
         try:
-            output = agent_executor.run(query)
+            output = agent_executor.run({
+                'input': query
+            })
         except LLMError as ex:
             raise ex
         except Exception as ex:
