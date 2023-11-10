@@ -28,7 +28,7 @@ async def create(path='_datasets'):
                 )
                 document = Documents(
                     title=file_name,
-                    content=markdown_to_text(file_content)
+                    content=file_content
                 )
                 session.add(document)
                 await session.flush()
@@ -36,7 +36,7 @@ async def create(path='_datasets'):
                 documents.append({
                     "id": document.id,
                     "title": file_name,
-                    "content": markdown_to_text(file_content)
+                    "content": file_content
                 })
 
             await session.commit()

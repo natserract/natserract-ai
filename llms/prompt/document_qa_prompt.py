@@ -1,14 +1,17 @@
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 
 document_qa_prompt_template = """
-Use the following pieces of context to help answer the users question. If its not relevant to the question, provide friendly responses.
+Use the following pieces of context to help answer the users question. 
+If the answer is not contained within the context below, say 'Maaf, saya tidak tau :('
+
 You have access to chat history, and can use it to help answer the question.
 When using code examples, use the following format:
 ```(language)
 (code)
 ```
 ----------------
-{context}
+
+Context: {context}
 """
 
 

@@ -9,12 +9,18 @@ from coordinators.models.read import count_models
 from llms.agent.agent_executor import AgentExecutor
 from logger import init_logger
 from models import init_models
+import functools
 
 nlp = spacy.load('en_core_web_sm')
 
 
 async def ainit():
-    return init_doc2_vec_models(nlp)
+    try:
+        models = await init_doc2_vec_models(nlp)
+        response = await arunning()
+        return response
+    except Exception as e:
+        raise ValueError(str(e))
 
 
 async def arunning():
@@ -35,14 +41,12 @@ def main():
 
     count_items_task = asyncio.gather(*[count_models(), count_documents()])
     count_items = asyncio.get_event_loop().run_until_complete(count_items_task)
+    count_initialized = functools.reduce(lambda a, b: a+b, count_items)
 
-    if len(count_items) > 1:
+    if count_initialized > 3:
         asyncio.get_event_loop().run_until_complete(arunning())
     else:
         asyncio.get_event_loop().run_until_complete(ainit())
-        asyncio.get_event_loop().run_until_complete(arunning())
-
-    input()
 
 
 main()

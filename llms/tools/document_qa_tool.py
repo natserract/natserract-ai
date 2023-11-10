@@ -16,7 +16,8 @@ nlp = spacy.load('en_core_web_sm')
 class DocumentQATool(BaseTool):
     name: str = "document_qa"
     description = """
-    A tool when you want to answer questions about similarity search. 
+    A tool when you want to answer questions about tech.
+     
     Input should be similarity search query based on the provided context.
     """
 
@@ -27,12 +28,12 @@ class DocumentQATool(BaseTool):
             self,
             query: str
     ):
-        normalized_query = translation_text_chain(
-            query
-        )
+        # normalized_query = translation_text_chain(
+        #     query
+        # )
 
         logging.info('Find document similarity')
-        similarities = await filter_by_similarity_score(nlp, normalized_query)
+        similarities = await filter_by_similarity_score(nlp, query, 5)
 
         document_titles = []
         document_contents = []
