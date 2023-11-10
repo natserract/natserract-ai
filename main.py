@@ -15,6 +15,23 @@ from llms.agent.agent_executor import AgentExecutor
 from logger import init_logger
 from models import init_models
 
+nlp = spacy.load('en_core_web_sm')
+
+async def arunning(query):
+    similarities = await filter_by_similarity_score(nlp, query)
+
+    # documents = []
+    # for keywords, similarity_score in similarities:
+    #     value = " ".join(keywords)
+    #     document = Document(page_content=value)
+    #     documents.append(document)
+    #
+    # print('documents', documents)
+    agent = AgentExecutor()
+    response = await agent.run(query=query)
+
+    return response.output
+
 
 def main():
     init_logger()
@@ -23,13 +40,11 @@ def main():
     count_items_task = asyncio.gather(*[count_models(), count_documents()])
     count_items = asyncio.get_event_loop().run_until_complete(count_items_task)
 
-    nlp = spacy.load('en_core_web_sm')
     if len(count_items) > 1:
         start_time = time.time()
 
-        # query = 'Mulai versi berapa Angular fitur Renderer telah tersedia?'
-        query = 'Tanggal berapa hari ini?'
-
+        query = 'Mulai versi berapa Angular fitur Renderer telah tersedia?'
+        # query = 'Tanggal berapa hari ini?'
 
         # similarities = asyncio.get_event_loop().run_until_complete(
         #     filter_by_similarity_score(nlp, query)
@@ -52,11 +67,10 @@ def main():
         #     max_execution_time=400.0,
         #     early_stopping_method="generate"
         # )
-        agent = AgentExecutor()
-        response = agent.run(query=query)
+        response = asyncio.get_event_loop().run_until_complete(arunning(query))
         #
         # response = complete_stream(query, documents)
-        print('response', response.output)
+        print('response', response)
 
         end_time = time.time()
         print("Total time searched: ", end_time - start_time)

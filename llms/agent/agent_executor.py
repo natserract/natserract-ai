@@ -1,24 +1,22 @@
 import logging
 from typing import Union, Optional, Sequence
 
-from langchain.agents import AgentExecutor as LCAgentExecutor, ConversationalChatAgent, LLMSingleActionAgent
+from langchain.agents import AgentExecutor as LCAgentExecutor, OpenAIFunctionsAgent
 from langchain.agents import BaseSingleActionAgent, BaseMultiActionAgent
 from langchain.callbacks.base import Callbacks
-from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 from langchain.memory.chat_memory import BaseChatMemory
+from langchain.prompts import MessagesPlaceholder
 from langchain.tools import BaseTool
 from pydantic.v1 import Extra, BaseModel
 
 from config import Config
-from llms.agent.output_parser.openai import OpenAIFunctionsAgentOutputParser
 from llms.error import LLMError
 from llms.helpers import moderation
-from llms.prompt.agent_prompt import TEMPLATE_INSTRUCTIONS, SUFFIX
-from llms.prompt.prompt_template import CustomPromptTemplate
 from llms.settings import settings
 from llms.tools.current_datetime_tool import DatetimeTool
+from llms.tools.document_qa_tool import DocumentQATool
 
 
 class AgentConfiguration(BaseModel):
@@ -52,7 +50,7 @@ class AgentExecutor:
             ),
             tools=self._get_tools(),
             memory=ConversationBufferMemory(
-                memory_key="history",
+                memory_key="chat_history",
                 return_messages=True,
                 chat_memory=ChatMessageHistory(),
             ),
@@ -62,24 +60,17 @@ class AgentExecutor:
 
     def _get_tools(self) -> Sequence[BaseTool]:
         return [
-            DatetimeTool()
+            DatetimeTool(),
+            DocumentQATool()
         ]
 
     def _init_agent(self) -> Union[BaseSingleActionAgent | BaseMultiActionAgent]:
-        prompt = CustomPromptTemplate(
-            prefix='',
-            instructions=TEMPLATE_INSTRUCTIONS,
-            suffix=SUFFIX,
+        agent = OpenAIFunctionsAgent.from_llm_and_tools(
+            llm=self.configuration.llm,
             tools=self.configuration.tools,
-            input_variables=["input", "intermediate_steps", "history"]
-        )
-        llm_chain = LLMChain(llm=self.configuration.llm, prompt=prompt)
-        tool_names = [tool.name for tool in self.configuration.tools]
-        agent = LLMSingleActionAgent(
-            llm_chain=llm_chain,
-            output_parser=OpenAIFunctionsAgentOutputParser(),
-            stop=["\nObservation:"],
-            allowed_tools=tool_names,
+            extra_prompt_messages=[
+                MessagesPlaceholder(variable_name="chat_history"),
+            ],
         )
 
         logging.info("Running agent...")
@@ -88,7 +79,7 @@ class AgentExecutor:
     def should_use_agent(self, query: str) -> bool:
         return self.agent.should_use_agent(query)
 
-    def run(self, query: str) -> AgentExecuteResult:
+    async def run(self, query: str) -> AgentExecuteResult:
         moderation_result = moderation.check_moderation(
             query
         )
@@ -110,7 +101,7 @@ class AgentExecutor:
         )
 
         try:
-            output = agent_executor.run({
+            output = await agent_executor.arun({
                 'input': query
             })
         except LLMError as ex:
@@ -123,3 +114,4 @@ class AgentExecutor:
             output=output,
             configuration=self.configuration
         )
+

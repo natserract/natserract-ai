@@ -1,5 +1,6 @@
-from typing import List
+from typing import List, Optional
 from langchain.agents import Tool
+from langchain.prompts.chat import BaseMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.schema import SystemMessage
 from langchain.prompts import BaseChatPromptTemplate
 from langchain.tools import BaseTool
@@ -13,6 +14,7 @@ class CustomPromptTemplate(BaseChatPromptTemplate):
     suffix: str
     # The list of tools available
     tools: list[BaseTool]
+    extra_prompt_messages: Optional[List[BaseMessagePromptTemplate]] = None,
 
     def _set_tool_description(self, tool_description, tool_name, tool_input):
         full_description = f"""{tool_description}, send this:
@@ -50,4 +52,7 @@ class CustomPromptTemplate(BaseChatPromptTemplate):
 
         # Add the suffix
         formatted += self.suffix
-        return [SystemMessage(content=formatted)]
+        _prompts = self.extra_prompt_messages or []
+        system_messages = [SystemMessage(content=formatted)]
+
+        return system_messages
