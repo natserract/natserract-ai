@@ -1,5 +1,5 @@
 import logging
-from typing import Union, Optional, Sequence
+from typing import Union, Optional, Sequence, Any
 
 from langchain.agents import AgentExecutor as LCAgentExecutor, OpenAIFunctionsAgent
 from langchain.agents import BaseSingleActionAgent, BaseMultiActionAgent
@@ -8,6 +8,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 from langchain.memory.chat_memory import BaseChatMemory
 from langchain.prompts import MessagesPlaceholder
+from langchain.schema import SystemMessage
 from langchain.tools import BaseTool
 from pydantic.v1 import Extra, BaseModel
 
@@ -68,6 +69,10 @@ class AgentExecutor:
         agent = OpenAIFunctionsAgent.from_llm_and_tools(
             llm=self.configuration.llm,
             tools=self.configuration.tools,
+            system_message=SystemMessage(
+                content="You are a NatserractAI, friendly and helpful AI assistant by Natserract that provides help "
+                        "with documents."
+            ),
             extra_prompt_messages=[
                 MessagesPlaceholder(variable_name="chat_history"),
             ],

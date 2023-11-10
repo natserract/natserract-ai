@@ -1,14 +1,10 @@
 import pickle
 import tempfile
-import time
 
 from gensim.models import Doc2Vec
 from scipy import spatial
 
-from coordinators.documents.read import get_all as get_all_documents
-from coordinators.documents.create import create_tagged_documents
 from database import connect
-from helpers.vectorize import preprocess_text
 
 
 async def count_models():
@@ -64,28 +60,3 @@ def get_words_from_similarities(most_similar_docs):
     return document_text
 
 
-async def filter_by_similarity_score(
-        nlp,
-        query: str,
-        top_k=5
-):
-    try:
-        documents = await get_all_documents()
-        contents = [document['content'] for document in documents]
-        tagged_documents = create_tagged_documents(nlp, contents)
-
-        query_tokens = preprocess_text(nlp(query))
-        models = await retrieve_models()
-
-        most_similar_docs = []
-        for model in models:
-            query_vector = model.infer_vector(query_tokens)
-
-            sims = model.dv.most_similar([query_vector], topn=len(model.dv))
-            most_similar_docs.extend(
-                [(tagged_documents[int(sim[0])].words, sim[1]) for sim in sims[:top_k]]
-            )
-
-        return most_similar_docs
-    except Exception as e:
-        raise ValueError(str(e))
