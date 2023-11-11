@@ -30,9 +30,9 @@ class DocumentQARetrieverTool(BaseTool):
         document_contents = []
         for document_id, keywords, similarity_score in similarities:
             document = await get_document(int(document_id))
-            document_titles.append(document['title'])
+            document_titles.append((document['title'], similarity_score))
             document_contents.append(document['content'])
 
         logging.info(f'Document has similarity found: {", ".join(document_titles)}')
-        return document_contents
+        return document_contents[:1]
 
