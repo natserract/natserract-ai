@@ -20,6 +20,3 @@ env.bak/
 venv.bak/
 
 =
-
-# Local
-_datasets/
