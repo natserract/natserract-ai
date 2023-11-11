@@ -24,6 +24,8 @@ async def create(path='_datasets'):
             documents = []
             for markdown_file_path in glob.glob(pattern):
                 file_name = os.path.basename(markdown_file_path).replace('.md', '')
+                file_name = file_name.replace('-', ' ')
+
                 file_content = FileExtractor.load_from_file(
                     markdown_file_path,
                     return_text=True
@@ -35,7 +37,7 @@ async def create(path='_datasets'):
                     str.maketrans("", "", string.punctuation)
                 )
                 lowercase_sentence = lowercase_sentence.strip()
-                lowercase_sentence = re.sub('\s+',' ',lowercase_sentence)
+                lowercase_sentence = re.sub('\s+', ' ', lowercase_sentence)
 
                 tokens = word_tokenize(lowercase_sentence)
                 tokens_str = ' '.join(tokens)
@@ -62,13 +64,17 @@ async def create(path='_datasets'):
         raise ValueError(str(e))
 
 
-def create_tagged_documents(nlp, documents: list):
+def create_tagged_documents_by_document_id(nlp, documents: list):
     """
     Preprocess and tokenize each document
     """
     tagged_documents = [
-        TaggedDocument(words=preprocess_text(nlp(document['content'])), tags=[str(document['id'])])
+        TaggedDocument(
+            words=preprocess_text(nlp(document['content'])),
+            tags=[(str(i), str(document['id']))]
+        )
         for i, document in enumerate(documents)
     ]
 
     return tagged_documents
+

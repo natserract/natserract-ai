@@ -7,6 +7,7 @@ from langchain.tools import BaseTool
 
 import config
 from coordinators.documents.read import get as get_document, filter_by_similarity_score
+from llms.chain.document_search_query_chain import document_search_query_chain
 from llms.prompt.document_qa_prompt import document_qa_prompt
 
 nlp = spacy.load('en_core_web_sm')
@@ -27,13 +28,15 @@ class DocumentQARetrieverTool(BaseTool):
             self,
             query: str
     ):
-        logging.info(f'Find document similarities from the query: {query}')
-        similarities = await filter_by_similarity_score(nlp, query, 3)
+        search_query = document_search_query_chain(query)
+
+        logging.info(f'Find document similarities from the query: {search_query}')
+        similarities = await filter_by_similarity_score(nlp, search_query, 3)
 
         document_titles = []
         document_contents = []
-        for document_id, keywords, similarity_score in similarities:
-            document = await get_document(int(document_id))
+        for doc_id, keywords, similarity_score in similarities:
+            document = await get_document(int(doc_id))
             document_titles.append(f"({document['title']}, {similarity_score})")
             document_contents.append(document['content'])
 
@@ -41,7 +44,7 @@ class DocumentQARetrieverTool(BaseTool):
 
         prompt = (document_qa_prompt
                   .format_prompt(
-                    context="".join(document_contents[:1]),
+                    context="".join(document_contents[:2]),
                     input=query
                   )
                   .to_string()

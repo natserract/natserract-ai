@@ -1,6 +1,4 @@
-from numpy import dot
-from numpy.linalg import norm
-from coordinators.documents.create import create_tagged_documents
+from coordinators.documents.create import create_tagged_documents_by_document_id
 from coordinators.models.read import retrieve_models
 from database import connect
 from helpers.vectorize import preprocess_text
@@ -38,8 +36,6 @@ async def get(id: int):
     except Exception as e:
         raise ValueError('Document not found!')
 
-def cosine_similarity(vec_a, vec_b):
-    return dot(vec_a, vec_b) / (norm(vec_a) * norm(vec_b))
 
 async def filter_by_similarity_score(
         nlp,
@@ -48,7 +44,7 @@ async def filter_by_similarity_score(
 ):
     try:
         documents = await get_all()
-        tagged_documents = create_tagged_documents(nlp, documents)
+        tagged_documents = create_tagged_documents_by_document_id(nlp, documents)
 
         query_tokens = preprocess_text(nlp(query))
         models = await retrieve_models()
@@ -58,14 +54,18 @@ async def filter_by_similarity_score(
             query_vector = model.infer_vector(query_tokens)
 
             sims = model.dv.most_similar([query_vector], topn=len(model.dv))
-            most_similar_docs.extend(
-                [
+            for tag, similarity in sims[:top_k]:
+                sim_idx = int(tag[0])
+                sim_document_id = int(tag[1])
+
+                similar_doc = tagged_documents[sim_idx]
+                most_similar_docs.append(
                     (
-                        tagged_documents[int(sim[0])].tags[0],
-                        tagged_documents[int(sim[0])].words, sim[1]
-                    ) for sim in sims[:top_k]
-                ]
-            )
+                        sim_document_id,
+                        similar_doc.words,
+                        similarity
+                    )
+                )
 
         return most_similar_docs
     except Exception as e:
