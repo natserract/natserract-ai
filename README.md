@@ -1,5 +1,7 @@
 # Natserract AI
-This repository contains code that demonstrates how to build a custom chat agent using Langchain, integrating GPT-4 from OpenAI. The agent can handle question-answering (QA), provide various tools, similarity search with Doc2Vec approach, to provide answers to user queries based on the provided documents.
+This repository contains code that demonstrates how to build AI assistant using Langchain, integrating GPT-4 from OpenAI. The assistant can handle question-answering (QA), provide various tools, similarity search with Doc2Vec approach, to provide answers to user queries based on the provided documents.
+
+Throughout this journey, i use PostgreSQL as the main Database and PGVector extension to store the embeddings.
 
 ## Setup
 Before running the script, you need to set up the required credentials and install the necessary libraries.
