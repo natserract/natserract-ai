@@ -1,3 +1,5 @@
+from numpy import dot
+from numpy.linalg import norm
 from coordinators.documents.create import create_tagged_documents
 from coordinators.models.read import retrieve_models
 from database import connect
@@ -36,6 +38,8 @@ async def get(id: int):
     except Exception as e:
         raise ValueError('Document not found!')
 
+def cosine_similarity(vec_a, vec_b):
+    return dot(vec_a, vec_b) / (norm(vec_a) * norm(vec_b))
 
 async def filter_by_similarity_score(
         nlp,

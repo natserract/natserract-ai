@@ -13,7 +13,6 @@ import functools
 
 nlp = spacy.load('en_core_web_sm')
 
-
 async def ainit():
     try:
         models = await init_doc2_vec_models(nlp)

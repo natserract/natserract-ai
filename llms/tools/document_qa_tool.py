@@ -1,10 +1,13 @@
 import logging
 from typing import Any
 
+import openai
 import spacy
 from langchain.tools import BaseTool
 
+import config
 from coordinators.documents.read import get as get_document, filter_by_similarity_score
+from llms.prompt.document_qa_prompt import document_qa_prompt
 
 nlp = spacy.load('en_core_web_sm')
 
@@ -15,6 +18,7 @@ class DocumentQARetrieverTool(BaseTool):
     A tool used searches and returns documents regarding conversational tech. 
     Input: send the user input.
     """
+    return_direct = True
 
     def _run(self) -> Any:
         raise NotImplementedError("DocumentQARetrieverTool does not support sync")
@@ -34,5 +38,21 @@ class DocumentQARetrieverTool(BaseTool):
             document_contents.append(document['content'])
 
         logging.info(f'Document similarities found: {", ".join(document_titles)}')
-        return document_contents[:1]
+
+        prompt = (document_qa_prompt
+                  .format_prompt(
+                    context="".join(document_contents[:1]),
+                    input=query
+                  )
+                  .to_string()
+                  )
+
+        response = await openai.ChatCompletion.acreate(
+            model=config.Config.OPENAI_MODEL,
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
+
+        return response.choices[0].message['content']
 
