@@ -1,28 +1,42 @@
 # Natserract AI
+This repository contains code that demonstrates how to build a custom chat agent using Langchain, integrating GPT-4 from OpenAI. The agent can handle question-answering (QA), provide various tools, similarity search with Doc2Vec approach, to provide answers to user queries based on the provided documents.
 
+## Setup
+Before running the script, you need to set up the required credentials and install the necessary libraries.
+
+### Install Required Libraries
+You can install the required libraries using poetry. Run the following command in your terminal or command prompt:
 ```sh
-poetry shell
-
 poetry install
 ```
 
-## How it works
+### Install Spacy
 ```sh
-Training Model -> 
+python -m spacy download en_core_web_sm
 ```
 
-## Requirements
+### Setup API Keys
+The script uses the OpenAI API key. You need to set these API keys as environment variables in your system. Replace OPENAI_API_KEY and GOOGLE_API_KEY with your actual API keys.
+
+### Setup Database
 - Postgres 15
 - Enable the extension
-```sql 
-CREATE EXTENSION vector;
-```
+  ```sql 
+  CREATE EXTENSION vector;
+  ```
 
 ## Running
-
 ```sh
+poetry shell
+
 poetry run python main.py
 ```
+
+## Process
+![](process.png)
+
+## Custom Datasets
+Create `_datasets` directory and place all markdown the documents in it.
 
 ## Performance Considerations
 
