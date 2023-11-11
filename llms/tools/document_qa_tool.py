@@ -23,16 +23,16 @@ class DocumentQARetrieverTool(BaseTool):
             self,
             query: str
     ):
-        logging.info(f'Find document similarity from query: {query}')
+        logging.info(f'Find document similarities from the query: {query}')
         similarities = await filter_by_similarity_score(nlp, query, 3)
 
         document_titles = []
         document_contents = []
         for document_id, keywords, similarity_score in similarities:
             document = await get_document(int(document_id))
-            document_titles.append((document['title'], similarity_score))
+            document_titles.append(f"({document['title']}, {similarity_score})")
             document_contents.append(document['content'])
 
-        logging.info(f'Document has similarity found: {", ".join(document_titles)}')
+        logging.info(f'Document similarities found: {", ".join(document_titles)}')
         return document_contents[:1]
 

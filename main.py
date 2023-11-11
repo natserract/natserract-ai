@@ -26,7 +26,7 @@ async def ainit():
 async def arunning():
     start_time = time.time()
 
-    query = input('Question: ')
+    query = input('\nQuestion: ')
     agent = AgentExecutor()
     response = await agent.run(query=query)
     print('\n', response.output)
