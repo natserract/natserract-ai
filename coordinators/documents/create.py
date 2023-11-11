@@ -64,7 +64,7 @@ async def create(path='_datasets'):
         raise ValueError(str(e))
 
 
-def create_tagged_documents_by_document_id(nlp, documents: list):
+def create_tagged_documents(nlp, documents: list):
     """
     Preprocess and tokenize each document
     """

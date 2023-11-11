@@ -1,4 +1,4 @@
-from coordinators.documents.create import create_tagged_documents_by_document_id
+from coordinators.documents.create import create_tagged_documents
 from coordinators.models.read import retrieve_models
 from database import connect
 from helpers.vectorize import preprocess_text
@@ -44,7 +44,7 @@ async def filter_by_similarity_score(
 ):
     try:
         documents = await get_all()
-        tagged_documents = create_tagged_documents_by_document_id(nlp, documents)
+        tagged_documents = create_tagged_documents(nlp, documents)
 
         query_tokens = preprocess_text(nlp(query))
         models = await retrieve_models()

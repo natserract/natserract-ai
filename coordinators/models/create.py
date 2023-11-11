@@ -5,7 +5,7 @@ import tempfile
 
 from gensim.models.doc2vec import Doc2Vec
 
-from coordinators.documents.create import create as create_documents, create_tagged_documents_by_document_id
+from coordinators.documents.create import create as create_documents, create_tagged_documents
 from coordinators.documents.read import get_all as get_all_documents
 from database import get_session
 from helpers.hash import get_model_name_from_content
@@ -22,7 +22,7 @@ async def init_doc2_vec_models(nlp):
 
             # Preprocessing markdown content
             contents = [document['content'] for document in documents]
-            tagged_documents = create_tagged_documents_by_document_id(nlp, documents)
+            tagged_documents = create_tagged_documents(nlp, documents)
             doc2vec_model = Doc2Vec(vector_size=50, min_count=2, epochs=40)
             doc2vec_model.build_vocab(tagged_documents)
             doc2vec_model.train(tagged_documents, total_examples=doc2vec_model.corpus_count,
