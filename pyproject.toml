@@ -17,6 +17,7 @@ asyncio = "^3.4.3"
 pgvector = "^0.2.3"
 transformers = "^4.35.0"
 openai = "^0.28.1"
+nltk = "^3.8.1"
 
 
 [build-system]

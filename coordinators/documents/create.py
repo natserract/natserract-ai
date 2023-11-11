@@ -1,13 +1,15 @@
 import glob
 import logging
 import os
+import re
+import string
 
 from gensim.models.doc2vec import TaggedDocument
+from nltk import word_tokenize
 
 from data_loaders.file_extractor import FileExtractor
 from database import get_session
 from helpers.file import get_base_path
-from helpers.text import markdown_to_text
 from helpers.vectorize import preprocess_text
 from models import Documents
 
@@ -26,9 +28,21 @@ async def create(path='_datasets'):
                     markdown_file_path,
                     return_text=True
                 )
+
+                # Tokenize
+                lowercase_sentence = file_content.lower()
+                lowercase_sentence = lowercase_sentence.translate(
+                    str.maketrans("", "", string.punctuation)
+                )
+                lowercase_sentence = lowercase_sentence.strip()
+                lowercase_sentence = re.sub('\s+',' ',lowercase_sentence)
+
+                tokens = word_tokenize(lowercase_sentence)
+                tokens_str = ' '.join(tokens)
+
                 document = Documents(
                     title=file_name,
-                    content=file_content
+                    content=tokens_str
                 )
                 session.add(document)
                 await session.flush()
@@ -36,7 +50,7 @@ async def create(path='_datasets'):
                 documents.append({
                     "id": document.id,
                     "title": file_name,
-                    "content": file_content
+                    "content": tokens_str
                 })
 
             await session.commit()
