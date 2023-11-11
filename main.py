@@ -45,6 +45,6 @@ if __name__ == "__main__":
     count_initialized = functools.reduce(lambda a, b: a+b, count_items)
 
     if count_initialized > 3:
-        asyncio.get_event_loop().run_until_complete(arunning())
+        asyncio.run(arunning())
     else:
-        asyncio.get_event_loop().run_until_complete(ainit())
+        asyncio.run(ainit())
