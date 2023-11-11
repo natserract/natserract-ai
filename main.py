@@ -34,8 +34,10 @@ async def arunning():
     end_time = time.time()
     print("\nTotal time searched: ", end_time - start_time)
 
+    await arunning()
 
-def main():
+
+if __name__ == "__main__":
     init_logger()
     init_models()
 
@@ -47,6 +49,3 @@ def main():
         asyncio.get_event_loop().run_until_complete(arunning())
     else:
         asyncio.get_event_loop().run_until_complete(ainit())
-
-
-main()

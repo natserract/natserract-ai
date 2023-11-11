@@ -6,6 +6,11 @@ poetry shell
 poetry install
 ```
 
+## How it works
+```sh
+Training Model -> 
+```
+
 ## Requirements
 - Postgres 15
 - Enable the extension

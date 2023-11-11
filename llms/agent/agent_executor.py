@@ -17,7 +17,7 @@ from llms.error import LLMError
 from llms.helpers import moderation
 from llms.settings import settings
 from llms.tools.current_datetime_tool import DatetimeTool
-from llms.tools.document_qa_tool import DocumentQATool
+from llms.tools.document_qa_tool import DocumentQARetrieverTool
 
 
 class AgentConfiguration(BaseModel):
@@ -62,10 +62,12 @@ class AgentExecutor:
     def _get_tools(self) -> Sequence[BaseTool]:
         return [
             DatetimeTool(),
-            DocumentQATool()
+            DocumentQARetrieverTool()
         ]
 
     def _init_agent(self) -> Union[BaseSingleActionAgent | BaseMultiActionAgent]:
+        logging.info("Initializing agent...")
+
         agent = OpenAIFunctionsAgent.from_llm_and_tools(
             llm=self.configuration.llm,
             tools=self.configuration.tools,

@@ -1,39 +1,30 @@
 import logging
 from typing import Any
 
-import openai
 import spacy
 from langchain.tools import BaseTool
 
-import config
 from coordinators.documents.read import get as get_document, filter_by_similarity_score
-from llms.chain.translation_text_chain import translation_text_chain
-from llms.prompt.document_qa_prompt import document_qa_prompt
 
 nlp = spacy.load('en_core_web_sm')
 
 
-class DocumentQATool(BaseTool):
-    name: str = "document_qa"
+class DocumentQARetrieverTool(BaseTool):
+    name: str = "document_qa_retriever"
     description = """
-    A tool when you want to answer questions about tech.
-     
-    Input should be similarity search query based on the provided context.
+    A tool used searches and returns documents regarding conversational tech. 
+    Input: send the user input.
     """
 
     def _run(self) -> Any:
-        raise NotImplementedError("DocumentQATool does not support sync")
+        raise NotImplementedError("DocumentQARetrieverTool does not support sync")
 
     async def _arun(
             self,
             query: str
     ):
-        # normalized_query = translation_text_chain(
-        #     query
-        # )
-
-        logging.info('Find document similarity')
-        similarities = await filter_by_similarity_score(nlp, query, 5)
+        logging.info(f'Find document similarity from query: {query}')
+        similarities = await filter_by_similarity_score(nlp, query, 3)
 
         document_titles = []
         document_contents = []
@@ -43,17 +34,5 @@ class DocumentQATool(BaseTool):
             document_contents.append(document['content'])
 
         logging.info(f'Document has similarity found: {", ".join(document_titles)}')
+        return document_contents
 
-        prompt = (document_qa_prompt
-                  .format_prompt(context="".join(document_contents))
-                  .to_string()
-                  )
-
-        response = await openai.ChatCompletion.acreate(
-            model=config.Config.OPENAI_MODEL,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
-        )
-
-        return response
