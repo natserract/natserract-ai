@@ -38,7 +38,7 @@ poetry run python main.py
 ![](process.png)
 
 ## Demo
-https://github.com/natserract/natserract-ai/assets/31182611/6325f1f1-00fc-4b08-88a2-b76d45dfcf15
+https://github.com/natserract/natserract-ai/assets/31182611/8b4be411-1fd4-4c9f-89cc-eb25670f7ead
 
 ## Custom Datasets
 Create `_datasets` directory and place all markdown the documents in it.
