@@ -18,7 +18,7 @@ python -m spacy download en_core_web_sm
 ```
 
 ### Setup API Keys
-The script uses the OpenAI API key. You need to set these API keys as environment variables in your system. Replace OPENAI_API_KEY and GOOGLE_API_KEY with your actual API keys.
+The script uses the OpenAI API key. You need to set these API keys as environment variables in your system. Replace OPENAI_API_KEY with your actual API keys.
 
 ### Setup Database
 - Postgres 15
