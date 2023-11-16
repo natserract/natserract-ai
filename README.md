@@ -41,7 +41,7 @@ poetry run python main.py
 https://github.com/natserract/natserract-ai/assets/31182611/8b4be411-1fd4-4c9f-89cc-eb25670f7ead
 
 ## Custom Datasets
-Create `_datasets` directory and place all markdown the documents in it.
+Create `_datasets` directory and place all markdown documents in it.
 
 ## Performance Considerations
 
